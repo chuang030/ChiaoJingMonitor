@@ -1,0 +1,157 @@
+{
+  "clientId": "",
+  "guildId": "",
+  "userListener": [
+    {
+      "id": "000000000000000000",
+      "name": "自訂該使用者名稱"
+    }
+	],
+  "channelListener": [
+    {
+      "guildId": "000000000000000000",
+      "channelId": "000000000000000000",
+      "disableMainMentionsUser": true,
+      "mainMentionsUserId": "",
+      "disableMainListenerUser": true,
+      "mainListenerUserId": "",
+      "defaultUserName": "user",
+    "randomMessage": {
+      "join": [
+      	"出現了~",
+        "出現了<emoji>"
+      ],
+      "leave": [
+      	"消失了~",
+        "消失了<emoji>"
+      ],
+      "streamingOn": [
+      	"開直播了~"
+      ],
+      "streamingOff": [
+      	"關直播了~"
+      ],
+      "muteOn": [
+      	"關麥了~"
+      ],
+      "muteOff": [
+      	"開麥了~"
+      ],
+      "changeChannel": [
+      	"跑到<channelId>裡了~"
+      ]
+    },
+      "specialEmoji": {
+      	"join": [],
+      	"leave": [],
+      	"streamingOn": [],
+      	"streamingOff": [],
+      	"muteOn": [],
+      	"muteOff": [],
+      	"changeChannel": []
+      }
+    }
+	],
+  "formatObject": {
+    "userId": "<userId>",
+    "userName": "<userName>",
+    "channelId": "<channelId>",
+    "otherMessageString": "<otherMsg>",
+    "emoji": "<emoji>"
+  },
+  "sendMessage": {
+    "join": "<userId><userName><otherMsg>",
+    "leave": "<userId><userName><otherMsg>",
+    "streamingOn": "<userId><userName><otherMsg>",
+    "streamingOff": "<userId><userName><otherMsg>",
+    "muteOn": "<userId><userName><otherMsg>",
+    "muteOff": "<userId><userName><otherMsg>",
+    "changeChannel": "<userId><userName><otherMsg>",
+    "randomMessage": {
+      "join": [],
+      "leave": [],
+      "streamingOn": [],
+      "streamingOff": [],
+      "muteOn": [],
+      "muteOff": [],
+      "changeChannel": []
+    },
+    "randomEmoji": {
+      "join": [],
+      "leave": [],
+      "streamingOn": [],
+      "streamingOff": [],
+      "muteOn": [],
+      "muteOff": [],
+      "changeChannel": []
+    }
+  },
+  "messageAnalyze": {
+    "analyzeUserIdTag": "<@[0-9]*>",
+    "analyzeChannelIdTag": "<#[0-9]*>",
+    "analyzeCustomEmojiTag": "<:[A-Za-z0-9_]*:[0-9]*>",
+    "analyzeCustomEmojiIdTag": ":[A-Za-z0-9_]*:[0-9]*",
+    "analyzeIdTag": "[0-9]+"
+  },
+  "divination": {
+    "level": {
+      "superGreatLuck": "超級上吉",
+      "greatLuck": "大吉",
+      "mediumLuck": "中吉",
+      "minorLuck": "小吉",
+      "goodLuck": "吉",
+      "lastLuck": "末吉",
+      "nopeBadLuck": "沒凶",
+      "badLuck": "凶",
+      "greatBadLuck": "大凶",
+      "superGreatBadLuck": "超級大凶"
+    },
+    "message": "<userId>\n<otherMsg> ： <otherMsg>",
+    "keywords": [
+      "運氣"
+    ]
+  },
+  "interesting": {
+    "message": "<otherMsg>",
+    "keywords": [
+      "有意思",
+      "沒意思"
+    ],
+    "emojiPool": [
+      ":rolling_eyes:",
+      ":smirk:",
+      ":pleading_face:",
+      ":upside_down:",
+      ":melting_face:",
+      ":unamused:"
+    ]
+  },
+  "doYouWant": {
+    "message": "<otherMsg>",
+    "keywords": [
+      "要不要"
+    ],
+    "sendMessagePool": [
+      "要",
+      "不要",
+      "好問題:melting_face:"
+    ]
+  },
+  "chatTogether": {
+    "keywords": {
+      "chatTogether": "一起聊天",
+      "dontChat": "不要聊天"
+    },
+    "message": {
+      "ErrorMessage": "你必須加入語音頻道",
+      "welcome": "歡迎 <userId> 一起聊天",
+      "leave": "<userId> 要想我喔~",
+      "absent": "<userId> 想我了? 我不在裡面 哦~"
+    }
+  },
+  "activityOption": {
+    "activityType": 0,
+    "activityMessage": "",
+    "status": "online"
+  }
+}
