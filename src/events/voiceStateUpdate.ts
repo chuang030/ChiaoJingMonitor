@@ -4,7 +4,6 @@ import {
     sendMessage,
     userListener,
     formatObject,
-    whitelist
 } from '../config.json';
 import {
     DataCheckUtils,
@@ -118,7 +117,7 @@ module.exports = {
                     randomMessageUtils.setEmojiPool = [...sendMessage.randomEmoji.changeChannel, ...channelListenerIterator.specialEmoji.changeChannel];
                     randomMessageUtils.setMessagePool = [...sendMessage.randomMessage.changeChannel, ...channelListenerIterator.randomMessage.changeChannel];
                     voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                    voiceStateUpdateSandMessageUtils.setMentionsVoiceChannel = newState.channelId;
+                    voiceStateUpdateSandMessageUtils.setMentionsChannel = newState.channelId;
                     await createMessage(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(sendMessage.changeChannel));
                     return;
                 };

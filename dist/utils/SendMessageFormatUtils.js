@@ -55,7 +55,7 @@ class SendMessageFormatUtils {
     /**
      * Set mention channel id.
      */
-    set setMentionsVoiceChannel(id) {
+    set setMentionsChannel(id) {
         this.mentionsVoiceChannelId = id;
     }
     ;

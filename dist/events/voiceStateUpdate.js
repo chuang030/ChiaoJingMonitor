@@ -127,7 +127,7 @@ module.exports = {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.changeChannel, ...channelListenerIterator.specialEmoji.changeChannel];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.changeChannel, ...channelListenerIterator.randomMessage.changeChannel];
                         voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        voiceStateUpdateSandMessageUtils.setMentionsVoiceChannel = newState.channelId;
+                        voiceStateUpdateSandMessageUtils.setMentionsChannel = newState.channelId;
                         yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.changeChannel));
                         return;
                     }

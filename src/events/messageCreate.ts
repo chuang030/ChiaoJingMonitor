@@ -1,5 +1,5 @@
 import createMessage from '../httpRequest/createMessage';
-import { Client, Events, Message } from 'discord.js';
+import { Client, Events, Message, VoiceBasedChannel } from 'discord.js';
 import { VoiceConnectionStatus } from '@discordjs/voice';
 import {
     divination,
@@ -14,7 +14,7 @@ import {
     SendMessageFormatUtils,
     LuckUtils,
     RandomMessageUtils,
-    VoiceChannelConnectionUtils,
+    VoiceReceiverUtils
 } from '../utils/index';
 
 const messageAnalyzeUtils = new MessageAnalyzeUtils({
@@ -37,7 +37,8 @@ const randomMessageUtils = new RandomMessageUtils();
 const luckUtils = new LuckUtils({
     divinationLevel: Object.values(divination.level)
 });
-const voiceChannelConnectionUtils = new VoiceChannelConnectionUtils();
+
+const voiceReceiverUtils: VoiceReceiverUtils = VoiceReceiverUtils.getInstance();
 
 module.exports = {
     name: Events.MessageCreate,
@@ -68,7 +69,7 @@ module.exports = {
                     break;
                 case "有意思":
                 default:
-                    sendMessageFormatUtils.setOtherMessageString = new Array(message.content);
+                    sendMessageFormatUtils.setOtherMessageString = [message.content];
                     break;
             }
             await createMessage(message.channelId, sendMessageFormatUtils.formatString(interesting.message));
@@ -76,60 +77,110 @@ module.exports = {
         keywordsSearchStartsEndsAndSend(message, doYouWant, () => {
             sendMessageFormatUtils.setMentionsUserId = message.author.id;
             sendMessageFormatUtils.setOtherMessageString =
-                new Array(doYouWant.sendMessagePool[randomMessageUtils.getRandom(0, doYouWant.sendMessagePool.length - 1)]);
+                [doYouWant.sendMessagePool[randomMessageUtils.getRandom(0, doYouWant.sendMessagePool.length - 1)]];
             message.reply(sendMessageFormatUtils.formatString(doYouWant.message));
         });
 
 
-        if (message.content.startsWith(chatTogether.keywords.chatTogether) || message.content.endsWith(chatTogether.keywords.chatTogether)) {
-            voiceChannelConnectionUtils.setClient = client;
-            voiceChannelConnectionUtils.setMessage = message;
-            const voiceChannel = message.member?.voice.channel;
-            const guildId = voiceChannelConnectionUtils.getGuildId;
+        if (message.content.startsWith(chatTogether.keywords.chatTogether)
+            || message.content.endsWith(chatTogether.keywords.chatTogether)) {
 
-            if (guildId === null || guildId === undefined) return;
-            let connection = client.commands.get(guildId);
+            // Set guildId
+            if (!message.guildId) return;
+            voiceReceiverUtils.setGuildId = message.guildId;
 
-            voiceChannelConnectionUtils.voiceConnection();
+            // Set bot client
+            voiceReceiverUtils.setClient = client;
+
+            // Analyze message content.
             messageAnalyzeUtils.analyzeString(message.content);
 
-            if (messageAnalyzeUtils.getResultUserId != "") {
-                voiceChannelConnectionUtils.setReceiverUserId = messageAnalyzeUtils.getResultUserId;
-                sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
-            } else {
-                voiceChannelConnectionUtils.setReceiverUserId = message.author.id;
-                sendMessageFormatUtils.setMentionsUserId = message.author.id;
+            // Get voiceChannel
+            const voiceChannel =
+                message.guild?.voiceStates.cache.get(messageAnalyzeUtils.getResultUserId)?.channel
+                || message.member?.voice.channel
+                || (message.guild?.channels.cache.get(messageAnalyzeUtils.getResultChannelId)?.isVoiceBased() ?
+                    message.guild?.channels.cache.get(messageAnalyzeUtils.getResultChannelId) as VoiceBasedChannel : false);
+
+            // if not voice Channel
+            if (!voiceChannel) {
+                let errorMessage = "";
+                if (messageAnalyzeUtils.getResultUserId != "") {
+                    errorMessage = chatTogether.message.errorMessage.mentionedUser;
+                    sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
+                }
+                if (messageAnalyzeUtils.getResultChannelId != "") {
+                    errorMessage = chatTogether.message.errorMessage.mentionedChannel;
+                    sendMessageFormatUtils.setMentionsChannel = messageAnalyzeUtils.getResultChannelId;
+                };
+                if (errorMessage === "") errorMessage = chatTogether.message.errorMessage.notInVoiceChannel;
+                return await createMessage(message.channelId, sendMessageFormatUtils.formatString(errorMessage));
+            };
+            voiceReceiverUtils.setVoiceChannel = voiceChannel;
+
+            let analyzeChannelId = "";
+            let analyzeUserlId = "";
+            // if mentioned channel
+            if (messageAnalyzeUtils.getResultChannelId != "") {
+                if (message.guild?.channels.cache.get(messageAnalyzeUtils.getResultChannelId)?.isVoiceBased()) {
+                    analyzeChannelId = messageAnalyzeUtils.getResultChannelId;
+                } else {
+                    // if mentioned channel not voice channel
+                    sendMessageFormatUtils.setMentionsChannel = messageAnalyzeUtils.getResultChannelId;
+                    // if mentioned content include user
+                    if (messageAnalyzeUtils.getResultUserId != "") {
+                        sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
+                    } else {
+                        sendMessageFormatUtils.setMentionsUserId = message.author.id;
+                    };
+                    await createMessage(message.channelId,
+                        sendMessageFormatUtils.formatString(chatTogether.message.errorMessage.mentionedChannel_2));
+                };
             };
 
+            // if mentioned user
+            if (messageAnalyzeUtils.getResultUserId != "") {
+                // user's channel is voice channel, to set receiver user id
+                if (message.guild?.voiceStates.cache.get(messageAnalyzeUtils.getResultUserId)?.channel) {
+                    analyzeUserlId = messageAnalyzeUtils.getResultUserId;
+                };
+                sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
+            };
+            if (analyzeUserlId === "") {
+                analyzeUserlId = message.author.id;
+                sendMessageFormatUtils.setMentionsUserId = message.author.id;
+            };
+            voiceReceiverUtils.setReceiverChannelId = analyzeChannelId;
+            voiceReceiverUtils.setReceiverUserId = analyzeUserlId;
+
+
+            // connection to voice channel
+            voiceReceiverUtils.voiceConnection();
+            let connection = client.commands.get(voiceReceiverUtils.getGuildId);
+            const welcomeMessage = await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.welcome));
+            // bot not in voice channel.
             if (!connection) {
-                if (!voiceChannel) return await createMessage(message.channelId, chatTogether.message.ErrorMessage);
                 // if not Mentionsed User
-                await voiceChannelConnectionUtils.voiceReceiver(VoiceConnectionStatus.Ready, 20e3);
-                await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.welcome));
+                await voiceReceiverUtils.voiceReceiver(VoiceConnectionStatus.Ready, 20e3);
+                return welcomeMessage;
             } else if (connection) {
-                if (!voiceChannel) return await createMessage(message.channelId, chatTogether.message.ErrorMessage);
-                // if bot status === ready
-                if (connection._state.status === 'ready') {
-                    await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.welcome));
-                    // if state channel id != now user channel id
-                    if (connection.packets.state.channel_id != voiceChannel.id) {
-                        voiceChannelConnectionUtils.voiceConnection();
-                        await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.welcome));
-                    };
-                };
-                if (connection._state.status === 'disconnected' || connection._state.status === 'signalling') {
-                    voiceChannelConnectionUtils.voiceConnection();
-                    await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.welcome));
-                };
+
+                // bot status
+                if (connection._state.status === 'ready') return welcomeMessage;
+                if (connection._state.status === 'signalling') return welcomeMessage;
+                if (connection._state.status === 'disconnected') return welcomeMessage;
             };
         };
+
+
         // Connection Destroy
         if (message.content.startsWith(chatTogether.keywords.dontChat) || message.content.endsWith(chatTogether.keywords.dontChat)) {
-            if (voiceChannelConnectionUtils.getConnectedVoice === null) {
+            if (voiceReceiverUtils.getConnectedVoice === null) {
                 sendMessageFormatUtils.setMentionsUserId = message.author.id;
                 return await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.absent));
             };
-            voiceChannelConnectionUtils.connectionDestroy();
+            voiceReceiverUtils.connectionDestroy();
+
             sendMessageFormatUtils.setMentionsUserId = message.author.id;
             await createMessage(message.channelId, sendMessageFormatUtils.formatString(chatTogether.message.leave));
             sendMessageFormatUtils.setMentionsUserId = "";
@@ -137,7 +188,10 @@ module.exports = {
 
         // /////////////////////
         if (message.content.startsWith("test")) {
-        }
+            console.log(message.content);
+
+
+        };
     }
 };
 

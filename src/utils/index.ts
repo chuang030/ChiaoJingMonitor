@@ -4,6 +4,7 @@ export { SendMessageFormatUtils, SendMessageFormatUtilsOption } from './SendMess
 export { RandomMessageUtils } from './RandomMessageUtils';
 export { VoiceStateUpdateSendMessageUtils } from './VoiceStateUpdateSandMessageUtils';
 export { VoiceChannelConnectionUtils } from './VoiceChannelConnectionUtils';
+export { VoiceReceiverUtils } from './VoiceReceiverUtils';
 export { LuckUtils } from './LuckUtils';
 export { MathUtils } from './MathUtils';
 export { MessageAnalyzeUtils } from './MessageAnalyzeUtils';

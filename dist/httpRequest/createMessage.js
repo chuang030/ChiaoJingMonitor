@@ -16,17 +16,23 @@ const axios_1 = __importDefault(require("axios"));
 const node_process_1 = require("node:process");
 function createMessage(channelId, message) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0, axios_1.default)({
-            method: "post",
-            url: `https://discord.com/api/v10/channels/${channelId}/messages`,
-            headers: {
-                Authorization: `Bot ${node_process_1.env.BOT_TOKEN}`,
-                "Accept-Encoding": "*"
-            },
-            data: {
-                content: message
-            }
-        });
+        try {
+            yield (0, axios_1.default)({
+                method: "post",
+                url: `https://discord.com/api/v10/channels/${channelId}/messages`,
+                headers: {
+                    Authorization: `Bot ${node_process_1.env.BOT_TOKEN}`,
+                    "Accept-Encoding": "*"
+                },
+                data: {
+                    content: message
+                }
+            });
+        }
+        catch (error) {
+            console.error(`Error: ${error}\nMessage: ${message}`);
+        }
+        ;
     });
 }
 exports.default = createMessage;

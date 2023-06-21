@@ -138,17 +138,22 @@
     ]
   },
   "chatTogether": {
-    "keywords": {
-      "chatTogether": "一起聊天",
-      "dontChat": "不要聊天"
-    },
-    "message": {
-      "ErrorMessage": "你必須加入語音頻道",
-      "welcome": "歡迎 <userId> 一起聊天",
-      "leave": "<userId> 要想我喔~",
-      "absent": "<userId> 想我了? 我不在裡面 哦~"
-    }
-  },
+		"keywords": {
+			"chatTogether": "一起聊天",
+			"dontChat": "不要聊天"
+		},
+		"message": {
+			"errorMessage": {
+				"notInVoiceChannel":"你必須加入語音頻道或指定頻道",
+				"mentionedUser": "<userId> 不在語音頻道中喔~",
+				"mentionedChannel": "<channelId> 並非語音頻道或不存在~",
+				"mentionedChannel_2": "<channelId> 並非語音頻道或不存在，所以來找 <userId> 啦~"
+			},
+			"welcome": "歡迎 <userId> 一起聊天",
+			"leave": "<userId> 要想我喔~",
+			"absent": "<userId> 想我了? 我不在裡面哦~"
+		}
+	},
   "activityOption": {
     "activityType": 0,
     "activityMessage": "",

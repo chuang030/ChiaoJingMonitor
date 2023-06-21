@@ -36,11 +36,11 @@ const randomMessageUtils = new index_1.RandomMessageUtils();
 const luckUtils = new index_1.LuckUtils({
     divinationLevel: Object.values(config_json_1.divination.level)
 });
-const voiceChannelConnectionUtils = new index_1.VoiceChannelConnectionUtils();
+const voiceReceiverUtils = index_1.VoiceReceiverUtils.getInstance();
 module.exports = {
     name: discord_js_1.Events.MessageCreate,
     execute(message, client) {
-        var _a;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         return __awaiter(this, void 0, void 0, function* () {
             if (message.author.bot)
                 return;
@@ -69,7 +69,7 @@ module.exports = {
                         break;
                     case "有意思":
                     default:
-                        sendMessageFormatUtils.setOtherMessageString = new Array(message.content);
+                        sendMessageFormatUtils.setOtherMessageString = [message.content];
                         break;
                 }
                 yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.interesting.message));
@@ -77,66 +77,112 @@ module.exports = {
             keywordsSearchStartsEndsAndSend(message, config_json_1.doYouWant, () => {
                 sendMessageFormatUtils.setMentionsUserId = message.author.id;
                 sendMessageFormatUtils.setOtherMessageString =
-                    new Array(config_json_1.doYouWant.sendMessagePool[randomMessageUtils.getRandom(0, config_json_1.doYouWant.sendMessagePool.length - 1)]);
+                    [config_json_1.doYouWant.sendMessagePool[randomMessageUtils.getRandom(0, config_json_1.doYouWant.sendMessagePool.length - 1)]];
                 message.reply(sendMessageFormatUtils.formatString(config_json_1.doYouWant.message));
             });
-            if (message.content.startsWith(config_json_1.chatTogether.keywords.chatTogether) || message.content.endsWith(config_json_1.chatTogether.keywords.chatTogether)) {
-                voiceChannelConnectionUtils.setClient = client;
-                voiceChannelConnectionUtils.setMessage = message;
-                const voiceChannel = (_a = message.member) === null || _a === void 0 ? void 0 : _a.voice.channel;
-                const guildId = voiceChannelConnectionUtils.getGuildId;
-                if (guildId === null || guildId === undefined)
+            if (message.content.startsWith(config_json_1.chatTogether.keywords.chatTogether)
+                || message.content.endsWith(config_json_1.chatTogether.keywords.chatTogether)) {
+                // Set guildId
+                if (!message.guildId)
                     return;
-                let connection = client.commands.get(guildId);
-                voiceChannelConnectionUtils.voiceConnection();
+                voiceReceiverUtils.setGuildId = message.guildId;
+                // Set bot client
+                voiceReceiverUtils.setClient = client;
+                // Analyze message content.
                 messageAnalyzeUtils.analyzeString(message.content);
+                // Get voiceChannel
+                const voiceChannel = ((_b = (_a = message.guild) === null || _a === void 0 ? void 0 : _a.voiceStates.cache.get(messageAnalyzeUtils.getResultUserId)) === null || _b === void 0 ? void 0 : _b.channel)
+                    || ((_c = message.member) === null || _c === void 0 ? void 0 : _c.voice.channel)
+                    || (((_e = (_d = message.guild) === null || _d === void 0 ? void 0 : _d.channels.cache.get(messageAnalyzeUtils.getResultChannelId)) === null || _e === void 0 ? void 0 : _e.isVoiceBased()) ?
+                        (_f = message.guild) === null || _f === void 0 ? void 0 : _f.channels.cache.get(messageAnalyzeUtils.getResultChannelId) : false);
+                // if not voice Channel
+                if (!voiceChannel) {
+                    let errorMessage = "";
+                    if (messageAnalyzeUtils.getResultUserId != "") {
+                        errorMessage = config_json_1.chatTogether.message.errorMessage.mentionedUser;
+                        sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
+                    }
+                    if (messageAnalyzeUtils.getResultChannelId != "") {
+                        errorMessage = config_json_1.chatTogether.message.errorMessage.mentionedChannel;
+                        sendMessageFormatUtils.setMentionsChannel = messageAnalyzeUtils.getResultChannelId;
+                    }
+                    ;
+                    if (errorMessage === "")
+                        errorMessage = config_json_1.chatTogether.message.errorMessage.notInVoiceChannel;
+                    return yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(errorMessage));
+                }
+                ;
+                voiceReceiverUtils.setVoiceChannel = voiceChannel;
+                let analyzeChannelId = "";
+                let analyzeUserlId = "";
+                // if mentioned channel
+                if (messageAnalyzeUtils.getResultChannelId != "") {
+                    if ((_h = (_g = message.guild) === null || _g === void 0 ? void 0 : _g.channels.cache.get(messageAnalyzeUtils.getResultChannelId)) === null || _h === void 0 ? void 0 : _h.isVoiceBased()) {
+                        analyzeChannelId = messageAnalyzeUtils.getResultChannelId;
+                    }
+                    else {
+                        // if mentioned channel not voice channel
+                        sendMessageFormatUtils.setMentionsChannel = messageAnalyzeUtils.getResultChannelId;
+                        // if mentioned content include user
+                        if (messageAnalyzeUtils.getResultUserId != "") {
+                            sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
+                        }
+                        else {
+                            sendMessageFormatUtils.setMentionsUserId = message.author.id;
+                        }
+                        ;
+                        yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.errorMessage.mentionedChannel_2));
+                    }
+                    ;
+                }
+                ;
+                // if mentioned user
                 if (messageAnalyzeUtils.getResultUserId != "") {
-                    voiceChannelConnectionUtils.setReceiverUserId = messageAnalyzeUtils.getResultUserId;
+                    // user's channel is voice channel, to set receiver user id
+                    if ((_k = (_j = message.guild) === null || _j === void 0 ? void 0 : _j.voiceStates.cache.get(messageAnalyzeUtils.getResultUserId)) === null || _k === void 0 ? void 0 : _k.channel) {
+                        analyzeUserlId = messageAnalyzeUtils.getResultUserId;
+                    }
+                    ;
                     sendMessageFormatUtils.setMentionsUserId = messageAnalyzeUtils.getResultUserId;
                 }
-                else {
-                    voiceChannelConnectionUtils.setReceiverUserId = message.author.id;
+                ;
+                if (analyzeUserlId === "") {
+                    analyzeUserlId = message.author.id;
                     sendMessageFormatUtils.setMentionsUserId = message.author.id;
                 }
                 ;
+                voiceReceiverUtils.setReceiverChannelId = analyzeChannelId;
+                voiceReceiverUtils.setReceiverUserId = analyzeUserlId;
+                // connection to voice channel
+                voiceReceiverUtils.voiceConnection();
+                let connection = client.commands.get(voiceReceiverUtils.getGuildId);
+                const welcomeMessage = yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
+                // bot not in voice channel.
                 if (!connection) {
-                    if (!voiceChannel)
-                        return yield (0, createMessage_1.default)(message.channelId, config_json_1.chatTogether.message.ErrorMessage);
                     // if not Mentionsed User
-                    yield voiceChannelConnectionUtils.voiceReceiver(voice_1.VoiceConnectionStatus.Ready, 20e3);
-                    yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
+                    yield voiceReceiverUtils.voiceReceiver(voice_1.VoiceConnectionStatus.Ready, 20e3);
+                    return welcomeMessage;
                 }
                 else if (connection) {
-                    if (!voiceChannel)
-                        return yield (0, createMessage_1.default)(message.channelId, config_json_1.chatTogether.message.ErrorMessage);
-                    // if bot status === ready
-                    if (connection._state.status === 'ready') {
-                        yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
-                        // if state channel id != now user channel id
-                        if (connection.packets.state.channel_id != voiceChannel.id) {
-                            voiceChannelConnectionUtils.voiceConnection();
-                            yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
-                        }
-                        ;
-                    }
-                    ;
-                    if (connection._state.status === 'disconnected' || connection._state.status === 'signalling') {
-                        voiceChannelConnectionUtils.voiceConnection();
-                        yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
-                    }
-                    ;
+                    // bot status
+                    if (connection._state.status === 'ready')
+                        return welcomeMessage;
+                    if (connection._state.status === 'signalling')
+                        return welcomeMessage;
+                    if (connection._state.status === 'disconnected')
+                        return welcomeMessage;
                 }
                 ;
             }
             ;
             // Connection Destroy
             if (message.content.startsWith(config_json_1.chatTogether.keywords.dontChat) || message.content.endsWith(config_json_1.chatTogether.keywords.dontChat)) {
-                if (voiceChannelConnectionUtils.getConnectedVoice === null) {
+                if (voiceReceiverUtils.getConnectedVoice === null) {
                     sendMessageFormatUtils.setMentionsUserId = message.author.id;
                     return yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.absent));
                 }
                 ;
-                voiceChannelConnectionUtils.connectionDestroy();
+                voiceReceiverUtils.connectionDestroy();
                 sendMessageFormatUtils.setMentionsUserId = message.author.id;
                 yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.leave));
                 sendMessageFormatUtils.setMentionsUserId = "";
@@ -144,7 +190,9 @@ module.exports = {
             ;
             // /////////////////////
             if (message.content.startsWith("test")) {
+                console.log(message.content);
             }
+            ;
         });
     }
 };
