@@ -72,7 +72,7 @@ class MathUtils {
      * ```
      */
     getProbabilityRandom(decimal, ...number) {
-        const denominator = Math.pow(10, decimal);
+        const denominator = Math.pow(10, Math.abs(decimal));
         let totalValue = 0;
         let addValue = 0;
         const probability = number.map(value => {

@@ -8,16 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const config_json_1 = require("../config.json");
 const index_1 = require("../utils/index");
-const createMessage_1 = __importDefault(require("../httpRequest/createMessage"));
+const index_2 = require("../httpRequest/index");
 const dataCheckUtils = new index_1.DataCheckUtils;
-const voiceStateUpdateSandMessageUtils = new index_1.VoiceStateUpdateSendMessageUtils({
+const voiceStateUpdateSendMessageUtils = new index_1.VoiceStateUpdateSendMessageUtils({
     sendMessageFormatUtilsOption: {
         formatTag: {
             userId: config_json_1.formatObject.userId,
@@ -42,11 +39,11 @@ module.exports = {
                 if (newState.id === channelListenerIterator.mainListenerUserId && !channelListenerIterator.disableMainListenerUser) {
                     // if disableMainMentionsUser is false, to set mainMentionsUserId
                     if (!channelListenerIterator.disableMainMentionsUser)
-                        voiceStateUpdateSandMessageUtils.setMentionsUserId = channelListenerIterator.mainMentionsUserId;
+                        voiceStateUpdateSendMessageUtils.setMentionsUserId = channelListenerIterator.mainMentionsUserId;
                 }
                 else {
                     // if newState.id is not mainListenerUserId, to set setMentionsUserId = ""
-                    voiceStateUpdateSandMessageUtils.setMentionsUserId = "";
+                    voiceStateUpdateSendMessageUtils.setMentionsUserId = "";
                 }
                 ;
                 // let channelId = "";
@@ -71,7 +68,7 @@ module.exports = {
                     // judged user and set username
                     if (userListenerIterator.id === newState.id) {
                         if (userListenerIterator.name != "") {
-                            voiceStateUpdateSandMessageUtils.setMentionsUserName = userListenerIterator.name;
+                            voiceStateUpdateSendMessageUtils.setMentionsUserName = userListenerIterator.name;
                         }
                         else {
                             // if there is not set username
@@ -83,21 +80,21 @@ module.exports = {
                                 if (userName === null)
                                     userName = (_d = newState.guild.members.cache.get(userListenerIterator.id)) === null || _d === void 0 ? void 0 : _d.user.username;
                                 // if not found username
-                                voiceStateUpdateSandMessageUtils.setMentionsUserName = userName ? userName : channelListenerIterator.defaultUserName;
+                                voiceStateUpdateSendMessageUtils.setMentionsUserName = userName ? userName : channelListenerIterator.defaultUserName;
                             }
                             else if (newState.channelId === null) {
                                 const userId = ((_e = oldState.member) === null || _e === void 0 ? void 0 : _e.user.id) ? (_f = oldState.member) === null || _f === void 0 ? void 0 : _f.user.id : "";
                                 let userName = (_g = oldState.guild.members.cache.get(userId)) === null || _g === void 0 ? void 0 : _g.nickname;
                                 if (userName === null)
                                     userName = (_h = newState.guild.members.cache.get(userListenerIterator.id)) === null || _h === void 0 ? void 0 : _h.user.username;
-                                voiceStateUpdateSandMessageUtils.setMentionsUserName = userName ? userName : channelListenerIterator.defaultUserName;
+                                voiceStateUpdateSendMessageUtils.setMentionsUserName = userName ? userName : channelListenerIterator.defaultUserName;
                             }
                             else {
                                 const userId = ((_j = newState.member) === null || _j === void 0 ? void 0 : _j.user.id) ? (_k = newState.member) === null || _k === void 0 ? void 0 : _k.user.id : "";
                                 let userName = (_l = newState.guild.members.cache.get(userId)) === null || _l === void 0 ? void 0 : _l.nickname;
                                 if (userName === null)
                                     userName = (_m = newState.guild.members.cache.get(userListenerIterator.id)) === null || _m === void 0 ? void 0 : _m.user.username;
-                                voiceStateUpdateSandMessageUtils.setMentionsUserName = userName ? userName : channelListenerIterator.defaultUserName;
+                                voiceStateUpdateSendMessageUtils.setMentionsUserName = userName ? userName : channelListenerIterator.defaultUserName;
                             }
                             ;
                         }
@@ -108,8 +105,8 @@ module.exports = {
                     if (oldState.channelId === null) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.join, ...channelListenerIterator.specialEmoji.join];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.join, ...channelListenerIterator.randomMessage.join];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.join));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.join));
                         return;
                     }
                     ;
@@ -117,8 +114,8 @@ module.exports = {
                     if (newState.channelId === null) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.leave, ...channelListenerIterator.specialEmoji.leave];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.leave, ...channelListenerIterator.randomMessage.leave];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.leave));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.leave));
                         return;
                     }
                     ;
@@ -126,9 +123,9 @@ module.exports = {
                     if (dataCheckUtils.judgedBooleanResult(index_1.LogicalOperators['&&'], oldState.channelId != null, newState.channelId != null, oldState.channelId != newState.channelId)) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.changeChannel, ...channelListenerIterator.specialEmoji.changeChannel];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.changeChannel, ...channelListenerIterator.randomMessage.changeChannel];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        voiceStateUpdateSandMessageUtils.setMentionsChannel = newState.channelId;
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.changeChannel));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        voiceStateUpdateSendMessageUtils.setMentionsChannel = newState.channelId;
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.changeChannel));
                         return;
                     }
                     ;
@@ -136,24 +133,24 @@ module.exports = {
                     if (newState.streaming && !oldState.streaming) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.streamingOn, ...channelListenerIterator.specialEmoji.streamingOn];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.streamingOn, ...channelListenerIterator.randomMessage.streamingOn];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.streamingOn));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.streamingOn));
                         return;
                     }
                     // user streaming is off
                     if (!newState.streaming && oldState.streaming) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.streamingOff, ...channelListenerIterator.specialEmoji.streamingOff];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.streamingOff, ...channelListenerIterator.randomMessage.streamingOff];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.streamingOff));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.streamingOff));
                         return;
                     }
                     // user self mute is on
                     if (newState.selfMute) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.muteOn, ...channelListenerIterator.specialEmoji.muteOn];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.muteOn, ...channelListenerIterator.randomMessage.muteOn];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.muteOn));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.muteOn));
                         return;
                     }
                     ;
@@ -161,8 +158,8 @@ module.exports = {
                     if (!newState.selfMute) {
                         randomMessageUtils.setEmojiPool = [...config_json_1.sendMessage.randomEmoji.muteOff, ...channelListenerIterator.specialEmoji.muteOff];
                         randomMessageUtils.setMessagePool = [...config_json_1.sendMessage.randomMessage.muteOff, ...channelListenerIterator.randomMessage.muteOff];
-                        voiceStateUpdateSandMessageUtils.setRandomMessageOption(randomMessageUtils);
-                        yield (0, createMessage_1.default)(channelId, voiceStateUpdateSandMessageUtils.getSendMessage(config_json_1.sendMessage.muteOff));
+                        voiceStateUpdateSendMessageUtils.setRandomMessageOption(randomMessageUtils);
+                        yield (0, index_2.createMessage)(channelId, voiceStateUpdateSendMessageUtils.getSendMessage(config_json_1.sendMessage.muteOff));
                         return;
                     }
                     ;

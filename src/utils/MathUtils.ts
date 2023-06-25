@@ -73,7 +73,7 @@ export class MathUtils {
      * ```
      */
     public getProbabilityRandom(decimal: number, ...number: number[]): number {
-        const denominator = Math.pow(10, decimal);
+        const denominator = Math.pow(10, Math.abs(decimal));
         let totalValue: number = 0;
         let addValue: number = 0;
         const probability = number.map(value => {

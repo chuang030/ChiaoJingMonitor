@@ -8,23 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const createMessage_1 = __importDefault(require("../httpRequest/createMessage"));
+const index_1 = require("../httpRequest/index");
 const discord_js_1 = require("discord.js");
 const voice_1 = require("@discordjs/voice");
 const config_json_1 = require("../config.json");
-const index_1 = require("../utils/index");
-const messageAnalyzeUtils = new index_1.MessageAnalyzeUtils({
+const index_2 = require("../utils/index");
+const messageAnalyzeUtils = new index_2.MessageAnalyzeUtils({
     analyzeUserIdTag: config_json_1.messageAnalyze.analyzeUserIdTag,
     analyzeChannelIdTag: config_json_1.messageAnalyze.analyzeChannelIdTag,
     analyzeCustomEmojiTag: config_json_1.messageAnalyze.analyzeCustomEmojiTag,
     analyzeIdTag: config_json_1.messageAnalyze.analyzeIdTag,
     analyzeCustomEmojiIdTag: config_json_1.messageAnalyze.analyzeCustomEmojiIdTag
 });
-const sendMessageFormatUtils = new index_1.SendMessageFormatUtils({
+const sendMessageFormatUtils = new index_2.SendMessageFormatUtils({
     formatTag: {
         userId: config_json_1.formatObject.userId,
         userName: config_json_1.formatObject.userName,
@@ -32,11 +29,11 @@ const sendMessageFormatUtils = new index_1.SendMessageFormatUtils({
         otherMessage: config_json_1.formatObject.otherMessageString
     }
 });
-const randomMessageUtils = new index_1.RandomMessageUtils();
-const luckUtils = new index_1.LuckUtils({
+const randomMessageUtils = new index_2.RandomMessageUtils();
+const luckUtils = new index_2.LuckUtils({
     divinationLevel: Object.values(config_json_1.divination.level)
 });
-const voiceReceiverUtils = index_1.VoiceReceiverUtils.getInstance();
+const voiceReceiverUtils = index_2.VoiceReceiverUtils.getInstance();
 module.exports = {
     name: discord_js_1.Events.MessageCreate,
     execute(message, client) {
@@ -59,7 +56,7 @@ module.exports = {
                 const divinationValue = luckUtils.getDivination(index);
                 sendMessageFormatUtils.setOtherMessageString = new Array(message.content, divinationValue);
                 sendMessageFormatUtils.setMentionsUserId = message.author.id;
-                yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.divination.message));
+                yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.divination.message));
             }));
             keywordsSearchStartsEndsAndSend(message, config_json_1.interesting, (iterator) => __awaiter(this, void 0, void 0, function* () {
                 switch (iterator) {
@@ -72,7 +69,7 @@ module.exports = {
                         sendMessageFormatUtils.setOtherMessageString = [message.content];
                         break;
                 }
-                yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.interesting.message));
+                yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.interesting.message));
             }));
             keywordsSearchStartsEndsAndSend(message, config_json_1.doYouWant, () => {
                 sendMessageFormatUtils.setMentionsUserId = message.author.id;
@@ -109,7 +106,7 @@ module.exports = {
                     ;
                     if (errorMessage === "")
                         errorMessage = config_json_1.chatTogether.message.errorMessage.notInVoiceChannel;
-                    return yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(errorMessage));
+                    return yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(errorMessage));
                 }
                 ;
                 voiceReceiverUtils.setVoiceChannel = voiceChannel;
@@ -131,7 +128,7 @@ module.exports = {
                             sendMessageFormatUtils.setMentionsUserId = message.author.id;
                         }
                         ;
-                        yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.errorMessage.mentionedChannel_2));
+                        yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.errorMessage.mentionedChannel_2));
                     }
                     ;
                 }
@@ -156,7 +153,7 @@ module.exports = {
                 // connection to voice channel
                 voiceReceiverUtils.voiceConnection();
                 let connection = client.commands.get(voiceReceiverUtils.getGuildId);
-                const welcomeMessage = yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
+                const welcomeMessage = yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.welcome));
                 // bot not in voice channel.
                 if (!connection) {
                     // if not Mentionsed User
@@ -179,12 +176,12 @@ module.exports = {
             if (message.content.startsWith(config_json_1.chatTogether.keywords.dontChat) || message.content.endsWith(config_json_1.chatTogether.keywords.dontChat)) {
                 if (voiceReceiverUtils.getConnectedVoice === null) {
                     sendMessageFormatUtils.setMentionsUserId = message.author.id;
-                    return yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.absent));
+                    return yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.absent));
                 }
                 ;
                 voiceReceiverUtils.connectionDestroy();
                 sendMessageFormatUtils.setMentionsUserId = message.author.id;
-                yield (0, createMessage_1.default)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.leave));
+                yield (0, index_1.createMessage)(message.channelId, sendMessageFormatUtils.formatString(config_json_1.chatTogether.message.leave));
                 sendMessageFormatUtils.setMentionsUserId = "";
             }
             ;

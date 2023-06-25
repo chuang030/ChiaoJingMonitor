@@ -11,7 +11,7 @@ import {
     RandomMessageUtils,
     VoiceStateUpdateSendMessageUtils,
 } from '../utils/index';
-import createMessage from '../httpRequest/createMessage';
+import { createMessage } from '../httpRequest/index';
 
 const dataCheckUtils = new DataCheckUtils;
 const voiceStateUpdateSandMessageUtils = new VoiceStateUpdateSendMessageUtils({

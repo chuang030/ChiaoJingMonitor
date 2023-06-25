@@ -92,6 +92,83 @@
 ### 運勢
 使用後即可得知今日運勢。與「運氣」相同，這是另一種觸發方式。
 
+### 抉擇之
+輸入事情、物品或任何事物，讓機器人來選擇
+
+**子命令**
+* 殘酷二選一：輸入兩件事情、物品或任何事物，讓機器人來選擇
+* 偏心二選一：輸入兩件事情、物品或任何事物，讓機器人來選擇，但你可以偏心，機率預設計算至小數點後3位<br>
+
+設置：<br>
+```js
+{
+  // 指令名稱
+  "commandName": "抉擇之",
+  // 指令說明
+  "commandDescription": "輸入事情、物品或任何事物，讓機器人來選擇",
+  // 子指令
+  "subCommand": [
+      {
+        // 子指令名稱
+        "commandName": "殘酷二選一",
+        // 子指令說明
+        "commandDescription": "輸入兩件事情、物品或任何事物，讓機器人來選擇",
+        // 輸入選項
+        "option": [
+            {
+                "optionName": "選項一",
+                "optionDescription": "輸入第一個選項"
+            },
+            {
+                "optionName": "選項二",
+                "optionDescription": "輸入第二個選項"
+            }
+        ],
+        // [思考效果]是否啟用思考時傳送圖片
+        "enableThinkImage": false,
+        // [思考效果]思考時間，單位：ms
+        "thinkTime": 1500,
+        // [思考效果]思考時傳送文字
+        "thinkMessage": "機器人思考中...",
+        // [思考效果]圖片路徑或連結
+        "thinkImage": "",
+        // 指令回覆文字
+        "reply": "`選項一` ：<otherMsg>    `選項二：` <otherMsg>\n`選擇：` <otherMsg>"
+      },
+      {
+        "commandName": "偏心二選一",
+        "commandDescription": "輸入兩件事情、物品或任何事物，讓機器人來選擇，但你可以偏心，機率預設計算至小數點後3位",
+        "option": [
+            {
+                "optionName": "選項一",
+                "optionDescription": "輸入第一個選項"
+            },
+            {
+                "optionName": "選項二",
+                "optionDescription": "輸入第二個選項"
+            },
+            {
+                "optionName": "機率一",
+                "optionDescription": "輸入選項一的機率"
+            },
+            {
+                "optionName": "機率二",
+                "optionDescription": "輸入選項二的機率"
+            },
+            {
+                "optionName": "小數位數",
+                "optionDescription": "設置機率小數點位數，最多小數點後12位"
+            }
+        ],
+        "enableThinkImage": false,
+        "thinkTime": 1500,
+        "thinkMessage": "機器人思考中...",
+        "thinkImage": "",
+        "reply": "`選項一：` <otherMsg>  `<otherMsg>%`    `選項二：` <otherMsg>  `<otherMsg>%`\n`選擇：` <otherMsg>"
+      }
+  ]
+}```
+
 ---
 
 ## 語音頻道狀態偵測

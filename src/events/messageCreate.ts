@@ -1,4 +1,4 @@
-import createMessage from '../httpRequest/createMessage';
+import { createMessage } from '../httpRequest/index';
 import { Client, Events, Message, VoiceBasedChannel } from 'discord.js';
 import { VoiceConnectionStatus } from '@discordjs/voice';
 import {
