@@ -100,6 +100,7 @@
 * 偏心二選一：輸入兩件事情、物品或任何事物，讓機器人來選擇，但你可以偏心，機率預設計算至小數點後3位<br>
 
 設置：<br>
+以下是 `config/commands/chooseOne.json` 的內容
 ```js
 {
   // 指令名稱
@@ -134,38 +135,8 @@
         "thinkImage": "",
         // 指令回覆文字
         "reply": "`選項一` ：<otherMsg>    `選項二：` <otherMsg>\n`選擇：` <otherMsg>"
-      },
-      {
-        "commandName": "偏心二選一",
-        "commandDescription": "輸入兩件事情、物品或任何事物，讓機器人來選擇，但你可以偏心，機率預設計算至小數點後3位",
-        "option": [
-            {
-                "optionName": "選項一",
-                "optionDescription": "輸入第一個選項"
-            },
-            {
-                "optionName": "選項二",
-                "optionDescription": "輸入第二個選項"
-            },
-            {
-                "optionName": "機率一",
-                "optionDescription": "輸入選項一的機率"
-            },
-            {
-                "optionName": "機率二",
-                "optionDescription": "輸入選項二的機率"
-            },
-            {
-                "optionName": "小數位數",
-                "optionDescription": "設置機率小數點位數，最多小數點後12位"
-            }
-        ],
-        "enableThinkImage": false,
-        "thinkTime": 1500,
-        "thinkMessage": "機器人思考中...",
-        "thinkImage": "",
-        "reply": "`選項一：` <otherMsg>  `<otherMsg>%`    `選項二：` <otherMsg>  `<otherMsg>%`\n`選擇：` <otherMsg>"
       }
+      // ...
   ]
 }
 ```
