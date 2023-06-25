@@ -167,7 +167,8 @@
         "reply": "`選項一：` <otherMsg>  `<otherMsg>%`    `選項二：` <otherMsg>  `<otherMsg>%`\n`選擇：` <otherMsg>"
       }
   ]
-}```
+}
+```
 
 ---
 
